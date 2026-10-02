@@ -14,9 +14,9 @@ namespace Logger
             _filePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
         }
 
-        public override void Log(LogLevel level, string message)
+        public override void Log(LogLevel logLevel, string message)
         {
-            var line = $"{DateTime.Now:G} {ClassName} {level}: {message}";
+            var line = $"{DateTime.Now:G} {ClassName} {logLevel}: {message}";
             File.AppendAllText(_filePath, line + Environment.NewLine);
         }
     }
