@@ -13,7 +13,7 @@ public class BaseLoggerExtensionsTests
         // Arrange
 
         // Act
-        //BaseLoggerExtensions.Error(null, "");
+        BaseLoggerExtensions.Error(null, "");
 
         // Assert
     }

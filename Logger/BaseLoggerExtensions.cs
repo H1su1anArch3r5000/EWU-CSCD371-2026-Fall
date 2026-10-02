@@ -2,5 +2,30 @@
 
 public static class BaseLoggerExtensions
 {
+    private static void NullVerifier(BaseLogger logger)
+    {
+        if (logger is null)
+            throw new System.ArgumentNullException(nameof(logger));
 
+    }
+    public static void Error(BaseLogger logger, string message, params object[] args)
+    {
+        NullVerifier(logger);
+        logger!.Log(LogLevel.Error, string.Format(message, args));
+    }
+    public static void Warning(BaseLogger logging, string notes, params object[] args)
+    {
+        NullVerifier(logging);
+        logging!.Log(LogLevel.Warning, string.Format(notes, args));
+    }
+    public static void Information(BaseLogger logger, string message, params object[] args)
+    {
+        NullVerifier(logger);
+        logger!.Log(LogLevel.Information, string.Format(message, args));
+    }
+    public static void Debug(BaseLogger logger, string message, params object[] args)
+    {
+        NullVerifier(logger);
+        logger!.Log(LogLevel.Debug, string.Format(message, args));
+    }
 }
