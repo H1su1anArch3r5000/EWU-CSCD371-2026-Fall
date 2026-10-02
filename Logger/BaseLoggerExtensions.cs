@@ -1,11 +1,13 @@
-﻿namespace Logger;
+﻿using System;
+
+namespace Logger;
 
 public static class BaseLoggerExtensions
 {
     private static void NullVerifier(BaseLogger logger)
     {
         if (logger is null)
-            throw new System.ArgumentNullException(nameof(logger));
+            ArgumentNullException.ThrowIfNull(logger);
 
     }
     public static void Error(this BaseLogger logger, string message, params object[] args)
