@@ -16,8 +16,8 @@ class Program
         //new Jester(new SomeReallyCoolOutputClass(), new SomeJokeServiceClass()).TellJoke();
         
 
-        var http = new HttpClient();
-        var jokerService = new JokeService(http);
+        HttpClient http = new HttpClient();
+        JokeService jokerService = new JokeService(http);
         var output = new ConsoleJokingOutput();
 
         var jester = new Jester(jokerService, output);

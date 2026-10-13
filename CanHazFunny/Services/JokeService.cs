@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 
 namespace CanHazFunny.Services;
 
-public class JokeService : JokeBuilder
+public sealed class JokeService : JokeBuilder
 {
-    private HttpClient HttpClient { get; } = new();
     private readonly HttpClient _http;
 
     public JokeService(HttpClient http)
@@ -17,8 +16,10 @@ public class JokeService : JokeBuilder
 
     public async Task<string> GetJokeAsync()
     {
-        string joke = await _http.GetStringAsync("https://geek-jokes.sameerkumar.website/api?format=text");
-        return joke;
+        var joke = await _http.GetStringAsync(
+            "https://geek-jokes.sameerkumar.website/api?format=text"
+        );
+
+        return joke ?? string.Empty;
     }
-   
 }

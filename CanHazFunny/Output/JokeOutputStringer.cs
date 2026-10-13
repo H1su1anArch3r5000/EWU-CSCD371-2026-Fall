@@ -6,6 +6,6 @@ namespace CanHazFunny.Output
 {
     public interface JokeOutputStringer
     {
-        public abstract void Write(string message);
+        public void Write(string message);
     }
 }
