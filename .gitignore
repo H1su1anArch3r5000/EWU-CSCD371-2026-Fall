@@ -348,6 +348,9 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+<<<<<<< HEAD
 
 # Live unit testing files.
 *.lutconfig
+=======
+>>>>>>> 0b4b224830b340768b2ce2165519e7bdc8d7a552
