@@ -16,8 +16,8 @@ public sealed class JesterTests
     [Fact]
     public async Task TellJokeAsync_SkipsChuckNorrisJokes()
     {
-        var jokeService = new Mock<JokeBuilder>();
-        var output = new Mock<JokeOutputStringer>();
+        var jokeService = new Mock<IJokeBuilder>();
+        var output = new Mock<IJokeOutputStringer>();
 
         jokeService.SetupSequence(s => s.GetJokeAsync())
             .ReturnsAsync("Chuck Norris counted to infinity. Twice.")
@@ -33,9 +33,9 @@ public sealed class JesterTests
     [Fact]
     public void Constructor_ThrowsOnNullDependencies()
     {
-        var output = new Mock<JokeOutputStringer>();
+        var output = new Mock<IJokeOutputStringer>();
 
         Assert.Throws<ArgumentNullException>(() => new Jester(null!, output.Object));
-        Assert.Throws<ArgumentNullException>(() => new Jester(new Mock<JokeBuilder>().Object, null!));
+        Assert.Throws<ArgumentNullException>(() => new Jester(new Mock<IJokeBuilder>().Object, null!));
     }
 }

@@ -11,7 +11,7 @@ public sealed class Jester
     private readonly JokeBuilder _jokeService;
     private readonly JokeOutputStringer _output;
 
-    public Jester(JokeBuilder jokeService, JokeOutputStringer output)
+    public Jester(JokeBuilder jokeService, IJokeOutputStringer output)
     {
         ArgumentNullException.ThrowIfNull(jokeService);
         ArgumentNullException.ThrowIfNull(output);

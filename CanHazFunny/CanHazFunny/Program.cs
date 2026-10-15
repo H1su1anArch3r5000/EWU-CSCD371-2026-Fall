@@ -1,10 +1,16 @@
 ﻿namespace CanHazFunny;
-
+using CanHazFunny.Output;
+using CanHazFunny.Services;
 class Program
 {
-    static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
-        //Feel free to use your own setup here - this is just provided as an example
-        //new Jester(new SomeReallyCoolOutputClass(), new SomeJokeServiceClass()).TellJoke();
+        var http = new HttpClient();
+        var jokeService = new JokeService(http);
+        var output = new ConsoleJokingOutput();
+
+        var jester = new Jester(jokeService, output);
+
+        await jester.TellJokeAsync();
     }
 }
