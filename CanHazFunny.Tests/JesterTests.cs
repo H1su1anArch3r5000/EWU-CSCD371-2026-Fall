@@ -36,6 +36,6 @@ public sealed class JesterTests
         var output = new Mock<IJokeOutputStringer>();
 
         Assert.Throws<ArgumentNullException>(() => new Jester(null!, output.Object));
-        Assert.Throws<ArgumentNullException>(() => new Jester(new Mock<JokeBuilder>().Object, null!));
+        Assert.Throws<ArgumentNullException>(() => new Jester(new Mock<IJokeBuilder>().Object, null!));
     }
 }
