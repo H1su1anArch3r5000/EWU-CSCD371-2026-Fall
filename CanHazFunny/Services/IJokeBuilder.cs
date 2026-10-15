@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CanHazFunny.Services;
-public interface JokeBuilder
+public interface IJokeBuilder
 {
     
     Task<string> GetJokeAsync();
