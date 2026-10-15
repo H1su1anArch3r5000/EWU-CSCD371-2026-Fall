@@ -33,7 +33,7 @@ public sealed class JesterTests
     [Fact]
     public void Constructor_ThrowsOnNullDependencies()
     {
-        var output = new Mock<JokeOutputStringer>();
+        var output = new Mock<IJokeOutputStringer>();
 
         Assert.Throws<ArgumentNullException>(() => new Jester(null!, output.Object));
         Assert.Throws<ArgumentNullException>(() => new Jester(new Mock<JokeBuilder>().Object, null!));
