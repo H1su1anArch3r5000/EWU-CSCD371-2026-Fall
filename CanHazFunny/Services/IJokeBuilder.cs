@@ -7,6 +7,5 @@ using System.Threading.Tasks;
 namespace CanHazFunny.Services;
 public interface IJokeBuilder
 {
-    
     Task<string> GetJokeAsync();
 }
