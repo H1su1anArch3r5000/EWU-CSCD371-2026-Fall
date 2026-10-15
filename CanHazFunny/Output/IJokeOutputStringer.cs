@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CanHazFunny.Output
 {
-    public interface JokeOutputStringer
+    public interface IJokeOutputStringer
     {
         public void Write(string message);
     }
