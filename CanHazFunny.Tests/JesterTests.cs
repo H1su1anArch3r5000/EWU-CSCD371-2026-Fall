@@ -16,8 +16,8 @@ public sealed class JesterTests
     [Fact]
     public async Task TellJokeAsync_SkipsChuckNorrisJokes()
     {
-        var jokeService = new Mock<JokeBuilder>();
-        var output = new Mock<JokeOutputStringer>();
+        var jokeService = new Mock<IJokeBuilder>();
+        var output = new Mock<IJokeOutputStringer>();
 
         jokeService.SetupSequence(s => s.GetJokeAsync())
             .ReturnsAsync("Chuck Norris counted to infinity. Twice.")
