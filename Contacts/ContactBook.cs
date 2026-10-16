@@ -1,10 +1,11 @@
+using System.Text.Json;
 using static Contacts.ContactBase;
 
 namespace Contacts;
 
 
 
-    public sealed record class FullName(string First, string Last, string? Middle) 
+public sealed record class FullName(string First, string Last, string? Middle) 
 {
     public override string ToString()
         => Middle is null
@@ -36,6 +37,28 @@ public class ContactBook
 {
     private HashSet<IContact> Entities { get; } = [];
 
+    private const string FilePath = "contacts.json";
+
+    public void Load()
+    {
+        if (!File.Exists(FilePath))
+            return;
+
+        var json = File.ReadAllText(FilePath);
+        var items = JsonSerializer.Deserialize<IContact[]>(json, JsonOptionGiver.Options);
+
+        if (items is not null)
+        {
+            foreach (var item in items)
+                Entities.Add(item);
+        }
+    }
+
+    public void Save()
+    {
+        var json = JsonSerializer.Serialize(Entities.ToArray(), JsonOptionGiver.Options);
+        File.WriteAllText(FilePath, json);
+    }
     public bool Add(IContact item)
     {
         return Entities.Add(item);
