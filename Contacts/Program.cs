@@ -27,8 +27,9 @@ public static class Program
                 case "3":
 
                     break;
-                //case "4":
+                case "4":
 
+                    break;
                 case "5":
                     return;
                 default:
@@ -44,7 +45,8 @@ public static class Program
         var major = Console.ReadLine() ?? "";
         Console.Write("Graduation Year: ");
         var gradYear = Console.ReadLine() ?? "";
-        var student = new Student(name, major, gradYear);
+        var email = ReadEmails();
+        var student = new Student(name, major, gradYear, email);
         if (!novel.Add(student))
             Console.WriteLine("Duplicate student - not added");
         else
@@ -56,13 +58,14 @@ public static class Program
         var department = Console.ReadLine() ?? "";
         Console.Write("Company name: ");
         var companyName = Console.ReadLine() ?? "";
-        var employee = new Employee(name, department, companyName);
+        var email = ReadEmails(); 
+        var employee = new Employee(name, department, companyName, email);
         if (!report.Add(employee))
             Console.WriteLine("Duplicate employee - not added");
         else
             Console.WriteLine("Employee added");
     }
-
+    //helper method for these functions regarding generating FullName
     private static FullName ReadName() {
         Console.Write("First Name: ");
         var firstName = Console.ReadLine() ?? "";
@@ -73,5 +76,19 @@ public static class Program
         if (string.IsNullOrWhiteSpace(middleName))
             middleName = null;
         return new FullName(firstName, lastName, middleName);
+    }
+    //helper method regarding generating Emails
+    private static IReadOnlyList<String> ReadEmails() { 
+        var emails = new List<String>();
+        Console.WriteLine("Enter email addresses (blank line to finish):");
+        while (true) {
+            Console.Write("Email: ");
+            var input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input)) {
+                break;
+            }
+            emails.Add(input);
+        }
+        return emails;
     }
 }
