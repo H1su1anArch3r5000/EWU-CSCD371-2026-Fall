@@ -4,10 +4,9 @@ using System.Threading.Tasks;
 
 namespace CanHazFunny.Services;
 
-public sealed class JokeService : JokeBuilder
+public sealed class JokeService : IJokeBuilder
 {
     private readonly HttpClient _http;
-
     public JokeService(HttpClient http)
     {
         ArgumentNullException.ThrowIfNull(http);

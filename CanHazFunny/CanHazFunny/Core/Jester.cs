@@ -8,10 +8,10 @@ namespace CanHazFunny.Core;
 
 public sealed class Jester
 {
-    private readonly JokeBuilder _jokeService;
-    private readonly JokeOutputStringer _output;
+    private readonly IJokeBuilder _jokeService;
+    private readonly IJokeOutputStringer _output;
 
-    public Jester(JokeBuilder jokeService, IJokeOutputStringer output)
+    public Jester(IJokeBuilder jokeService, IJokeOutputStringer output)
     {
         ArgumentNullException.ThrowIfNull(jokeService);
         ArgumentNullException.ThrowIfNull(output);
