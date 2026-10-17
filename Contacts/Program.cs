@@ -5,7 +5,7 @@ public static class Program
     public static void Main()
     {
         var paperbackBook = new ContactBook();
-
+        paperbackBook.Load();
         while (true) {
             Console.WriteLine("\nContacts CLI");
             Console.WriteLine("1. Add a Student");
@@ -37,7 +37,8 @@ public static class Program
                     break;
             }
         }
-
+        
+        paperbackBook.Save();
     }
     private static void AddStudent(ContactBook novel) {
         var name = ReadName();
@@ -91,4 +92,88 @@ public static class Program
         }
         return emails;
     }
+    private static void EditContact(ContactBook book) {
+        Console.Write("Enter ID to edit: ");
+        if(!int.TryParse(Console.ReadLine(), out var id))
+        {
+            Console.WriteLine("Invalid ID. ID must be an INT to be valid. Ending Program Now.");
+            return;
+        }
+        var contacter = book.GetAll().FirstOrDefault(c => c.ID == id);
+
+        if (contacter is null)
+        {
+            Console.WriteLine("Contact not found, ending program.");
+            return;
+        }
+        
+        if(contacter is Student s)
+        {
+            EditStudent(book, s);
+        }
+        else if(contacter is Employee e)
+        {
+            EditEmployee(book, e);
+        }
+    }
+    //EditStudent Helper Method
+    private static void EditStudent(ContactBook c, Student s)
+    {
+        Console.Write("New Major (blank = keep): ");
+        var major = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(major))
+            major = s.Major;
+
+        Console.Write("New Grad Year (blank = keep): ");
+        var grad_y = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(grad_y))
+            grad_y = s.grad_year;
+        Console.WriteLine("Update emails? (y/n): ");
+        var updateEmails = Console.ReadLine()?.Trim().ToLower() == "y";
+
+        var emails = updateEmails ? ReadEmails() : s.Emails;
+
+        var updated_Student = s with
+        {
+            Major = major,
+            grad_year = grad_y,
+            Emails = emails
+        };
+        
+
+        c.Remove(s);
+        c.Add(updated_Student);
+
+        Console.WriteLine("Student updated.");
+    }
+    //EditEmployee Helper Method
+    private static void EditEmployee(ContactBook c, Employee e) {
+        Console.Write("New Department (blank = keep): ");
+        var department = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(department))
+            department = e.Department;
+
+        Console.Write("New Company (blank = keep): ");
+        var comp = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(comp))
+            comp = e.Company_Name;
+
+        Console.WriteLine("Update emails? (y/n): ");
+        var updateEmails = Console.ReadLine()?.Trim().ToLower() == "y";
+
+        var emails = updateEmails ? ReadEmails() : e.Emails;
+
+        var updated_Employee = e with
+        {
+            Department = department,
+            Company_Name = comp,
+            Emails = emails
+        };
+
+        c.Remove(e);
+        c.Add(updated_Employee);
+
+        Console.WriteLine("Employee updated.");
+    }
+    
 }
