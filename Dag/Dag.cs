@@ -1,6 +1,6 @@
 ﻿namespace Dag
 {
-    public sealed class Dag<T>
+    public sealed class Dag<T> where T : notnull
     {
         private readonly Dictionary<T, HashSet<T>> _dependents;
         public Dag()
@@ -32,14 +32,25 @@
             {
                 throw new ArgumentException($"Node '{dependency}' does not exist in this context.");
             }
-             
             if (WouldCreateCycle(dependsOn, dependency)){
                  throw new InvalidOperationException("Adding this dependency would create a cycle.");
               }
-              
             _dependents[dependsOn].Add(dependency);
         }
-        public IReadOnlyCollection<T> getDependents(T value)
+        public bool RemoveNode(T node)
+        {
+            // Removing the key drops all outgoing edges.
+            if (!_dependents.Remove(node))
+                return false;
+
+            // Drop incoming edges from every remaining node.
+            foreach (var targets in _dependents.Values)
+                targets.Remove(node);
+
+            return true;
+        }
+
+        public IReadOnlyCollection<T> GetDependents(T value)
         {
             EnsureNodeExists(value);
             return _dependents[value].ToList();
@@ -75,6 +86,28 @@
                 }
             }
 
+            return false;
+        }
+        public IReadOnlyCollection<T> GetDependencies(T value)
+        {
+            return _dependents
+                .Where(pair => pair.Value.Contains(value))
+                .Select(pair => pair.Key)
+                .ToList();
+        }
+        private bool WouldCreateCycle(T dependsOn, T dependent)
+        {
+            if (EqualityComparer<T>.Default.Equals(dependsOn, dependent))
+            {
+                return true;
+            }
+            foreach (var next in _dependents[dependent])
+            {
+                if (WouldCreateCycle(dependsOn, next))
+                {
+                    return true;
+                }
+            }
             return false;
         }
 
