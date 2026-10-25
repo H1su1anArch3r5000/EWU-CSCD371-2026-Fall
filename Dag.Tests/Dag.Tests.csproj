@@ -10,6 +10,7 @@
 		<LangVersion>latest</LangVersion>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<TreatWarningsAsErrors>enable</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>
