@@ -31,6 +31,19 @@
 
             _dependents[dependsOn].Add(dependency);
         }
+        public bool RemoveNode(T node)
+        {
+            // Removing the key drops all outgoing edges.
+            if (!_dependents.Remove(node))
+                return false;
+
+            // Drop incoming edges from every remaining node.
+            foreach (var targets in _dependents.Values)
+                targets.Remove(node);
+
+            return true;
+        }
+
         public IReadOnlyCollection<T> GetDependents(T value)
         {
 
