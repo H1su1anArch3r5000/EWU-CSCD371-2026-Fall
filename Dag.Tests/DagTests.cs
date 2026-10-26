@@ -4,7 +4,8 @@
     public sealed class DagTests
     {
         [TestMethod]
-        public void AddNode_DuplicateNode_DoesNotDuplicateButDoesNotThrow(){
+        public void AddNode_DuplicateNode_DoesNotDuplicateButDoesNotThrow()
+        {
             Dag<string> tester = new();
             tester.AddNode("A");
             tester.AddNode("A");
@@ -19,7 +20,7 @@
 
             dag.AddDependency("A", "B");
 
-            Assert.Contains("B", dag.GetDependents("A"));
+            Assert.Contains("B", dag.GetDependencies("A"));   // changed
         }
         [TestMethod]
         public void Edge_Is_VisibleFromBothSides()
@@ -29,8 +30,8 @@
             dag.AddNode("B");
             dag.AddDependency("B", "A");   // B depends on A
 
-            CollectionAssert.Contains(dag.GetDependencies("B").ToList(), "A");
-            CollectionAssert.Contains(dag.GetDependents("A").ToList(), "B");
+            CollectionAssert.Contains(dag.GetDependencies("B").ToList(), "A");   // changed
+            CollectionAssert.Contains(dag.GetDependents("A").ToList(), "B");     // changed
         }
         [TestMethod]
         public void RemoveNode_MissingNode_ReturnsFalse()
@@ -54,15 +55,16 @@
             Assert.IsTrue(testDag.RemoveNode("B"));
 
             // B is gone from everyone's edges
-            CollectionAssert.AreEquivalent(new[] { "C" }, testDag.GetDependencies("A").ToList());
-            CollectionAssert.AreEquivalent(new[] { "A" }, testDag.GetDependents("C").ToList());
+            CollectionAssert.AreEquivalent(new[] { "C" }, testDag.GetDependencies("A").ToList());   // changed
+            CollectionAssert.AreEquivalent(new[] { "A" }, testDag.GetDependents("C").ToList());     // changed
 
             // Nothing else changed
             Assert.AreEqual(0, testDag.GetDependents("A").Count());
             Assert.AreEqual(0, testDag.GetDependencies("C").Count());
         }
         [TestMethod]
-        public void AddDependency_CycleDetected_Throws() {
+        public void AddDependency_CycleDetected_Throws()
+        {
             Dag<string> dag = new();
             dag.AddNode("A");
             dag.AddNode("B");
@@ -70,8 +72,8 @@
 
             dag.AddDependency("A", "B");
             dag.AddDependency("B", "C");
-            
-            Assert.Throws<InvalidOperatorException>(() => dag.AddDependency("C","A"));
+
+            Assert.Throws<InvalidOperationException>(() => dag.AddDependency("C", "A"));
         }
         [TestMethod]
         public void RemoveNode_RemovesIncomingAndOutgoingEdges()
@@ -91,19 +93,19 @@
             dag.RemoveNode("B");
 
             CollectionAssert.DoesNotContain(
-                dag.GetDependents("A").ToList(),
+                dag.GetDependencies("A").ToList(),   // changed
                 "B");
 
             CollectionAssert.Contains(
-                dag.GetDependents("A").ToList(),
+                dag.GetDependencies("A").ToList(),
                 "C");
 
             CollectionAssert.Contains(
-                dag.GetDependents("C").ToList(),
+                dag.GetDependencies("C").ToList(),   // changed
                 "D");
         }
         [TestMethod]
-        public void GetDependents_ReturnsDirectDependents()
+        public void GetDependencies_ReturnsDirectDependencies()   // renamed
         {
             Dag<string> dag = new();
 
@@ -115,13 +117,40 @@
             dag.AddDependency("A", "C");
 
             IReadOnlyCollection<string> result =
-                dag.GetDependents("A");
+                dag.GetDependencies("A");   // changed
 
-            Assert.Equal(2, result.Count);
+            Assert.AreEqual(2, result.Count);
             Assert.Contains("B", result);
             Assert.Contains("C", result);
         }
+        [TestMethod]
+        public void WouldCreateCycle_UnknownDependent_Throws()
+        {
+            Dag<string> dag = new();
+            dag.AddNode("A");
 
+            Assert.Throws<ArgumentException>(() => dag.WouldCreateCycle("B", "A"));
+        }
+        [TestMethod]
+        public void WouldCreateCycle_ReportsTrueAndFalseCorrectly()
+        {
+            Dag<string> dag = new();
+            dag.AddNode("A");
+            dag.AddNode("B");
+            dag.AddDependency("A", "B");
+
+            Assert.IsTrue(dag.WouldCreateCycle("B", "A"));    // cycle
+            Assert.IsTrue(dag.WouldCreateCycle("A", "A"));    // self-edge
+            Assert.IsFalse(dag.WouldCreateCycle("A", "B"));   // no cycle
+        }
+
+        [TestMethod]
+        public void WouldCreateCycle_UnknownDependency_Throws()
+        {
+            Dag<string> dag = new();
+            dag.AddNode("A");
+
+            Assert.Throws<ArgumentException>(() => dag.WouldCreateCycle("A", "B"));
+        }
     }
 }
-
