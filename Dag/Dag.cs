@@ -98,7 +98,7 @@ namespace Dag
         //Extra credit part 2:
         public String toMermaid() {
             StringBuilder tower = new();
-            tower.AppendLine("Flowchart TD");
+            tower.AppendLine("flowchart TD");
             foreach (T node in _dependents.Keys)
             {
                 string label = node!.ToString()!;
@@ -112,7 +112,7 @@ namespace Dag
                     string targeter = dependent!.ToString()!;
                     string source_id = makeMermaidID(source);
                     string target_id = makeMermaidID(targeter);
-                    tower.AppendLine($"    {source_id}[\"{source}\"] --> {target_id}[\"{targeter}\"]");
+                    tower.AppendLine($"    {source_id} --> {target_id}");
                 }
             }
             return tower.ToString();
