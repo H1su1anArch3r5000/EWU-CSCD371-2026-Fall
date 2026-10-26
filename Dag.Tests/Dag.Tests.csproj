@@ -10,18 +10,13 @@
 		<LangVersion>latest</LangVersion>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<TreatWarningsAsErrors>enable</TreatWarningsAsErrors>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="MSTest" Version="4.5.1" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include ="..\Dag\Dag.csproj" />
+		<ProjectReference Include="..\Dag\Dag.csproj" />
 	</ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Dag\Dag.csproj" />
-  </ItemGroup>
-
 </Project>
