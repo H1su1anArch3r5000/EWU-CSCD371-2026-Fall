@@ -1,4 +1,6 @@
-﻿namespace Dag
+﻿using System.Text;
+
+namespace Dag
 {
     public sealed class Dag<T> where T : notnull
     {
@@ -93,6 +95,38 @@
                 .Select(pair => pair.Key)
                 .ToList();
         }
+        //Extra credit part 2:
+        public String toMermaid() {
+            StringBuilder tower = new();
+            tower.AppendLine("Flowchart TD");
+            foreach (T node in _dependents.Keys)
+            {
+                string label = node!.ToString()!;
+                string id = makeMermaidID(label);
 
+                tower.AppendLine($"    {id}[\"{label}\"]");
+            }
+            foreach (KeyValuePair<T, HashSet<T>> pair in _dependents) {
+                foreach (T dependent in pair.Value) {
+                    string source = pair.Key!.ToString()!;
+                    string targeter = dependent!.ToString()!;
+                    string source_id = makeMermaidID(source);
+                    string target_id = makeMermaidID(targeter);
+                    tower.AppendLine($"    {source_id}[\"{source}\"] --> {target_id}[\"{targeter}\"]");
+                }
+            }
+            return tower.ToString();
+        }
+        private static string makeMermaidID(String value) {
+            StringBuilder builder = new();
+            foreach(char c in value)
+            {
+                if (char.IsLetterOrDigit(c))
+                {
+                    builder.Append(c);
+                }
+            }
+            return builder.ToString();
+        }
     }
 }

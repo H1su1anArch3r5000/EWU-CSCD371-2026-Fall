@@ -152,5 +152,24 @@
 
             Assert.Throws<ArgumentException>(() => dag.WouldCreateCycle("A", "B"));
         }
+        //Extra Credit Test 2:
+        [TestMethod]
+        public void ToMermaid_ReturnsExpectedFlowchart()
+        {
+            Dag<string> dag = new();
+
+            dag.AddNode("A");
+            dag.AddNode("B");
+
+            dag.AddDependency("A", "B");
+
+            string mermaid = dag.toMermaid();
+
+            Assert.IsTrue(
+                mermaid.Contains("flowchart TD"));
+
+            Assert.IsTrue(
+                mermaid.Contains("A --> B"));
+        }
     }
 }
