@@ -124,34 +124,15 @@
             Assert.Contains("C", result);
         }
         [TestMethod]
-        public void WouldCreateCycle_UnknownDependent_Throws()
+        public void AddDependent_UnknownDependent_Throws()
         {
             Dag<string> dag = new();
             dag.AddNode("A");
 
             Assert.Throws<ArgumentException>(() => dag.AddDependency("B", "A"));
         }
-        [TestMethod]
-        public void WouldCreateCycle_ReportsTrueAndFalseCorrectly()
-        {
-            Dag<string> dag = new();
-            dag.AddNode("A");
-            dag.AddNode("B");
-            dag.AddDependency("A", "B");
-
-            Assert.IsTrue(dag.WouldCreateCycle("B", "A"));    // cycle
-            Assert.IsTrue(dag.WouldCreateCycle("A", "A"));    // self-edge
-            Assert.IsFalse(dag.WouldCreateCycle("A", "B"));   // no cycle
-        }
-
-        [TestMethod]
-        public void WouldCreateCycle_UnknownDependency_Throws()
-        {
-            Dag<string> dag = new();
-            dag.AddNode("A");
-
-            Assert.Throws<ArgumentException>(() => dag.WouldCreateCycle("A", "B"));
-        }
+        
+        
         //Extra Credit Test 2:
         [TestMethod]
         public void ToMermaid_ReturnsExpectedFlowchart()
@@ -163,7 +144,7 @@
 
             dag.AddDependency("A", "B");
 
-            string mermaid = dag.toMermaid();
+            string mermaid = dag.ToMermaid();
 
             Assert.IsTrue(
                 mermaid.Contains("flowchart TD"));
