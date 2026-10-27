@@ -129,7 +129,7 @@
             Dag<string> dag = new();
             dag.AddNode("A");
 
-            Assert.Throws<ArgumentException>(() => dag.WouldCreateCycle("B", "A"));
+            Assert.Throws<ArgumentException>(() => dag.AddDependency("B", "A"));
         }
         [TestMethod]
         public void WouldCreateCycle_ReportsTrueAndFalseCorrectly()

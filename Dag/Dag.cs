@@ -1,132 +1,131 @@
 ﻿using System.Text;
 
-namespace Dag
+namespace Dag;
+
+public sealed class Dag<T> where T : notnull
 {
-    public sealed class Dag<T> where T : notnull
+    private readonly Dictionary<T, HashSet<T>> _dependents;
+    public Dag()
     {
-        private readonly Dictionary<T, HashSet<T>> _dependents;
-        public Dag()
+        _dependents = new Dictionary<T, HashSet<T>>();
+    }
+    public void AddNode(T node)
+    {
+        if (!_dependents.ContainsKey(node))
         {
-            _dependents = new Dictionary<T, HashSet<T>>();
+            _dependents[node] = [];
         }
-        public void AddNode(T node)
+    }
+    public void AddDependency(T dependent, T dependency)
+    {
+        if (!_dependents.ContainsKey(dependent))
         {
-            if (!_dependents.ContainsKey(node))
-            {
-                _dependents[node] = [];
-            }
+            throw new ArgumentException($"Node '{dependent}' does not exist in this context.");
         }
-        public void AddDependency(T dependent, T dependency)
+        if (!_dependents.ContainsKey(dependency))
         {
-            if (!_dependents.ContainsKey(dependent))
-            {
-                throw new ArgumentException($"Node '{dependent}' does not exist in this context.");
-            }
-            if (!_dependents.ContainsKey(dependency))
-            {
-                throw new ArgumentException($"Node '{dependency}' does not exist in this context.");
-            }
-            if (WouldCreateCycle(dependent, dependency))
-            {
-                throw new InvalidOperationException("Adding this dependency would create a cycle.");
-            }
-            _dependents[dependent].Add(dependency);
+            throw new ArgumentException($"Node '{dependency}' does not exist in this context.");
         }
-        public bool RemoveNode(T node)
+        if (WouldCreateCycle(dependent, dependency))
         {
-            // Removing the key drops all outgoing edges.
-            if (!_dependents.Remove(node))
-                return false;
+            throw new InvalidOperationException("Adding this dependency would create a cycle.");
+        }
+        _dependents[dependent].Add(dependency);
+    }
+    public bool RemoveNode(T node)
+    {
+        // Removing the key drops all outgoing edges.
+        if (!_dependents.Remove(node))
+            return false;
 
-            // Drop incoming edges from every remaining node.
-            foreach (var targets in _dependents.Values)
-                targets.Remove(node);
+        // Drop incoming edges from every remaining node.
+        foreach (var targets in _dependents.Values)
+            targets.Remove(node);
 
+        return true;
+    }
+
+    public IReadOnlyCollection<T> GetDependencies(T value)
+    {
+        EnsureNodeExists(value);
+        return _dependents[value].ToList();
+    }
+    private void EnsureNodeExists(T value)
+    {
+        if (!_dependents.ContainsKey(value))
+        {
+            throw new ArgumentException($"Node {value} does not exist.");
+        }
+    }
+    private bool WouldCreateCycle(T dependent, T dependency)
+    {
+        EnsureNodeExists(dependent);
+        EnsureNodeExists(dependency);
+        HashSet<T> visited = [];
+        return CanReach(dependency, dependent, visited);
+    }
+    private bool CanReach(T current, T target, HashSet<T> visited)
+    {
+
+        if (EqualityComparer<T>.Default.Equals(current, target))
+        {
             return true;
         }
 
-        public IReadOnlyCollection<T> GetDependencies(T value)
+        if (!visited.Add(current))
         {
-            EnsureNodeExists(value);
-            return _dependents[value].ToList();
+            return false;
         }
-        private void EnsureNodeExists(T value)
-        {
-            if (!_dependents.ContainsKey(value))
-            {
-                throw new ArgumentException($"Node {value} does not exist.");
-            }
-        }
-        public bool WouldCreateCycle(T dependent, T dependency)
-        {
-            EnsureNodeExists(dependent);
-            EnsureNodeExists(dependency);
-            HashSet<T> visited = [];
-            return CanReach(dependency, dependent, visited);
-        }
-        private bool CanReach(T current, T target, HashSet<T> visited)
-        {
 
-            if (EqualityComparer<T>.Default.Equals(current, target))
+        foreach (T neighbor in _dependents[current])
+        {
+            if (CanReach(neighbor, target, visited))
             {
                 return true;
             }
-
-            if (!visited.Add(current))
-            {
-                return false;
-            }
-
-            foreach (T neighbor in _dependents[current])
-            {
-                if (CanReach(neighbor, target, visited))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
-        public IReadOnlyCollection<T> GetDependents(T value)
+
+        return false;
+    }
+    public IReadOnlyCollection<T> GetDependents(T value)
+    {
+        EnsureNodeExists(value); //existence check added 
+        return _dependents
+            .Where(pair => pair.Value.Contains(value))
+            .Select(pair => pair.Key)
+            .ToList();
+    }
+    //Extra credit part 2:
+    public String ToMermaid() {
+        StringBuilder tower = new();
+        tower.AppendLine("flowchart TD");
+        foreach (T node in _dependents.Keys)
         {
-            EnsureNodeExists(value); //existence check added 
-            return _dependents
-                .Where(pair => pair.Value.Contains(value))
-                .Select(pair => pair.Key)
-                .ToList();
-        }
-        //Extra credit part 2:
-        public String toMermaid() {
-            StringBuilder tower = new();
-            tower.AppendLine("flowchart TD");
-            foreach (T node in _dependents.Keys)
-            {
-                string label = node!.ToString()!;
-                string id = makeMermaidID(label);
+            string label = node!.ToString()!;
+            string id = MakeMermaidID(label);
 
-                tower.AppendLine($"    {id}[\"{label}\"]");
-            }
-            foreach (KeyValuePair<T, HashSet<T>> pair in _dependents) {
-                foreach (T dependent in pair.Value) {
-                    string source = pair.Key!.ToString()!;
-                    string targeter = dependent!.ToString()!;
-                    string source_id = makeMermaidID(source);
-                    string target_id = makeMermaidID(targeter);
-                    tower.AppendLine($"    {source_id} --> {target_id}");
-                }
-            }
-            return tower.ToString();
+            tower.AppendLine($"    {id}[\"{label}\"]");
         }
-        private static string makeMermaidID(String value) {
-            StringBuilder builder = new();
-            foreach(char c in value)
+        foreach (KeyValuePair<T, HashSet<T>> pair in _dependents) {
+            foreach (T dependent in pair.Value) {
+                string source = pair.Key!.ToString()!;
+                string targeter = dependent!.ToString()!;
+                string source_id = MakeMermaidID(source);
+                string target_id = MakeMermaidID(targeter);
+                tower.AppendLine($"    {source_id} --> {target_id}");
+            }
+        }
+        return tower.ToString();
+    }
+    private static string MakeMermaidID(String value) {
+        StringBuilder builder = new();
+        foreach(char c in value)
+        {
+            if (char.IsLetterOrDigit(c))
             {
-                if (char.IsLetterOrDigit(c))
-                {
-                    builder.Append(c);
-                }
+                builder.Append(c);
             }
-            return builder.ToString();
         }
+        return builder.ToString();
     }
 }
