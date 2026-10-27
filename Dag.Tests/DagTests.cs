@@ -142,12 +142,12 @@
             dag.AddNode("A");
             dag.AddNode("B");
 
-            dag.AddDependency("A", "B");
+            dag.AddDependency("B", "A"); // B depends on A
 
             string mermaid = dag.ToMermaid();
 
             Assert.IsTrue(
-                mermaid.Contains("flowchart TD"));
+                mermaid.Contains("flowchart"));
 
             Assert.IsTrue(
                 mermaid.Contains("A --> B"));

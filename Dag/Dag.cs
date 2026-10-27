@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Globalization;
 
 namespace Dag;
 
@@ -18,13 +19,13 @@ public sealed class Dag<T> where T : notnull
     }
     public void AddDependency(T dependent, T dependency)
     {
-        if (!_dependents.ContainsKey(dependent))
+        if (!_dependents.TryGetValue(dependent, out var dependencies))
         {
-            throw new ArgumentException($"Node '{dependent}' does not exist in this context.");
+            throw new ArgumentException($"Node '{dependent}' does not exist.");
         }
-        if (!_dependents.ContainsKey(dependency))
+        if (!_dependents.TryGetValue(dependency, out _))
         {
-            throw new ArgumentException($"Node '{dependency}' does not exist in this context.");
+            throw new ArgumentException($"Node '{dependency}' does not exist.");
         }
         if (WouldCreateCycle(dependent, dependency))
         {
@@ -96,30 +97,32 @@ public sealed class Dag<T> where T : notnull
             .ToList();
     }
     //Extra credit part 2:
-    public String ToMermaid() {
+    public string ToMermaid()
+    {
         StringBuilder tower = new();
-        tower.AppendLine("flowchart TD");
+        tower.AppendLine("Mermaid flowchart");
         foreach (T node in _dependents.Keys)
         {
             string label = node!.ToString()!;
             string id = MakeMermaidID(label);
 
-            tower.AppendLine($"    {id}[\"{label}\"]");
+            tower.AppendLine(CultureInfo.InvariantCulture, $"    {id}");
         }
-        foreach (KeyValuePair<T, HashSet<T>> pair in _dependents) {
-            foreach (T dependent in pair.Value) {
-                string source = pair.Key!.ToString()!;
-                string targeter = dependent!.ToString()!;
-                string source_id = MakeMermaidID(source);
-                string target_id = MakeMermaidID(targeter);
-                tower.AppendLine($"    {source_id} --> {target_id}");
+        foreach (KeyValuePair<T, HashSet<T>> pair in _dependents)
+        {
+            string source_id = MakeMermaidID(pair.Key!.ToString()!);
+            foreach (T dependent in pair.Value)
+            {
+                string target_id = MakeMermaidID(dependent!.ToString()!);
+                tower.AppendLine(CultureInfo.InvariantCulture, $"    {target_id} --> {source_id}");
             }
         }
         return tower.ToString();
     }
-    private static string MakeMermaidID(String value) {
+    private static string MakeMermaidID(String value)
+    {
         StringBuilder builder = new();
-        foreach(char c in value)
+        foreach (char c in value)
         {
             if (char.IsLetterOrDigit(c))
             {
