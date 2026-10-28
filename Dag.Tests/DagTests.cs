@@ -1,5 +1,5 @@
 ﻿namespace Dag.Tests;
-{
+
     [TestClass]
 public sealed class DagTests
 {
@@ -153,5 +153,4 @@ public sealed class DagTests
         Assert.Contains(
             "A --> B", mermaid);
     }
-}
 }
