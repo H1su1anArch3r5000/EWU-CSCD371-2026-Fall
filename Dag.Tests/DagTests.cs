@@ -20,7 +20,7 @@ public sealed class DagTests
 
         dag.AddDependency("A", "B");
 
-        Assert.Contains("B", dag.GetDependencies("A"));   // changed
+        CollectionAssert.Contains(dag.GetDependencies("A").ToList(), "B");  // changed
     }
     [TestMethod]
     public void Edge_Is_VisibleFromBothSides()
@@ -74,10 +74,10 @@ public sealed class DagTests
         dag.AddNode("B");
         dag.AddNode("C");
 
-        dag.AddDependency("A", "B");
-        dag.AddDependency("B", "C");
+        dag.AddDependency("B", "A");
+        dag.AddDependency("C", "B");
 
-        Assert.Throws<InvalidOperationException>(() => dag.AddDependency("C", "A"));
+        Assert.Throws<InvalidOperationException>(() => dag.AddDependency("A", "C"));
     }
     [TestMethod]
     public void AddDependency_DirectedGraph_DoesNotThrow()
@@ -165,15 +165,17 @@ public sealed class DagTests
         dag.AddNode("A");
         dag.AddNode("B");
 
-        dag.AddDependency("B", "A"); // B depends on A
+        dag.AddDependency("A", "B");
 
         string mermaid = dag.ToMermaid();
 
-        Assert.Contains(
-            "flowchart", mermaid);
+        StringAssert.Contains(
+            mermaid,
+            "Mermaid flowchart");
 
-        Assert.Contains(
-            "A --> B", mermaid);
+        StringAssert.Contains(
+            mermaid,
+            "B --> A");
     }
     [TestMethod]
     public void NonExistentNodeThrowsArgumentException()

@@ -17,21 +17,21 @@ public sealed class Dag<T> where T : notnull
             _dependents[node] = [];
         }
     }
-    public void AddDependency(T dependent, T dependency)
+    public void AddDependency(T dependency, T dependent)
     {
-        if (!_dependents.TryGetValue(dependent, out var dependencies))
-        {
-            throw new ArgumentException($"Node '{dependent}' does not exist.");
-        }
         if (!_dependents.TryGetValue(dependency, out _))
         {
             throw new ArgumentException($"Node '{dependency}' does not exist.");
         }
-        if (WouldCreateCycle(dependent, dependency))
+        if (!_dependents.TryGetValue(dependent, out var dependencies))
+        {
+            throw new ArgumentException($"Node '{dependent}' does not exist.");
+        }
+        if (WouldCreateCycle(dependency, dependent))
         {
             throw new InvalidOperationException("Adding this dependency would create a cycle.");
         }
-        _dependents[dependent].Add(dependency);
+        _dependents[dependency].Add(dependent);
     }
     public bool RemoveNode(T node)
     {
@@ -40,7 +40,7 @@ public sealed class Dag<T> where T : notnull
             return false;
 
         // Drop incoming edges from every remaining node.
-        foreach (var targets in _dependents.Values)
+        foreach (HashSet<T> targets in _dependents.Values)
             targets.Remove(node);
 
         return true;
@@ -58,12 +58,12 @@ public sealed class Dag<T> where T : notnull
             throw new ArgumentException($"Node {value} does not exist.");
         }
     }
-    private bool WouldCreateCycle(T dependent, T dependency)
+    private bool WouldCreateCycle(T dependency, T dependent)
     {
-        EnsureNodeExists(dependent);
         EnsureNodeExists(dependency);
+        EnsureNodeExists(dependent);
         HashSet<T> visited = [];
-        return CanReach(dependency, dependent, visited);
+        return CanReach(dependent, dependency, visited);
     }
     private bool CanReach(T current, T target, HashSet<T> visited)
     {
