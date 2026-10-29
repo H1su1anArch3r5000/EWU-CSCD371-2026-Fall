@@ -5,7 +5,7 @@ namespace Dag;
 
 public sealed class Dag<T> where T : notnull
 {
-    private readonly Dictionary<T, HashSet<T>> _dependents;
+    private readonly Dictionary<T, HashSet<T>> _dependents = [];
     public Dag()
     {
         _dependents = new Dictionary<T, HashSet<T>>();
