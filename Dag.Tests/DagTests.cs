@@ -1,6 +1,6 @@
 ﻿namespace Dag.Tests;
 
-    [TestClass]
+[TestClass]
 public sealed class DagTests
 {
     [TestMethod]
@@ -80,6 +80,28 @@ public sealed class DagTests
         Assert.Throws<InvalidOperationException>(() => dag.AddDependency("C", "A"));
     }
     [TestMethod]
+    public void AddDependency_DirectedGraph_DoesNotThrow()
+    {
+        Dag<int> graph = new();
+        graph.AddNode(101);
+        graph.AddNode(202);
+        graph.AddNode(303);
+        graph.AddNode(404);
+        graph.AddNode(505);
+
+        graph.AddDependency(101, 202);
+        graph.AddDependency(101, 303);
+        graph.AddDependency(202, 404);
+        graph.AddDependency(303, 404);
+
+        graph.AddDependency(505, 101);   // exhausts the dag, revisits a node but can not reach
+        graph.AddDependency(505, 404);   // same, in the opposite direction 
+
+        Assert.HasCount(2, graph.GetDependencies(505));
+        Assert.Contains(101, graph.GetDependencies(505));
+        Assert.Contains(404, graph.GetDependencies(505));
+    }
+    [TestMethod]
     public void RemoveNode_RemovesIncomingAndOutgoingEdges()
     {
         Dag<string> dag = new();
@@ -152,5 +174,15 @@ public sealed class DagTests
 
         Assert.Contains(
             "A --> B", mermaid);
+    }
+    [TestMethod]
+    public void NonExistentNodeThrowsArgumentException()
+    {
+        Dag<int> dag = new();
+
+        dag.AddNode(100);
+
+        Assert.Throws<ArgumentException>(() => dag.GetDependents(101)); // nonexistent value throws argument exception
+        Assert.Throws<ArgumentException>(() => dag.GetDependencies(101)); // nonexistent value throws argument exception
     }
 }
