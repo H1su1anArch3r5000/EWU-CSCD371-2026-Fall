@@ -3,13 +3,12 @@ using System.Globalization;
 
 namespace Dag;
 
-public sealed class Dag<T> where T : notnull
+public sealed class Dag<T>(IEqualityComparer<T>? comparer = null) where T : notnull
 {
-    private readonly Dictionary<T, HashSet<T>> _dependents;
-    public Dag()
-    {
-        _dependents = new Dictionary<T, HashSet<T>>();
-    }
+    private readonly Dictionary<T, HashSet<T>> _dependents = [];
+    //default equality(Equals/GetHashCode) comparer
+    private readonly IEqualityComparer<T> _comparer = comparer ?? EqualityComparer<T>.Default;
+
     public void AddNode(T node)
     {
         if (!_dependents.ContainsKey(node))
