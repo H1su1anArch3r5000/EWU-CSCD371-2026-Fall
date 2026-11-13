@@ -1,2 +1,4 @@
 <Solution>
+  <Project Path="Resilience.Tests/Resilience.Tests.csproj" />
+  <Project Path="Resilience/Resilience.csproj" />
 </Solution>
