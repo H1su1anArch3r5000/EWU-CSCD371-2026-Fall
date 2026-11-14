@@ -29,6 +29,7 @@ public sealed class Importer : IDisposable
     {
         int rowCount = 0;
         string? line;
+        _ = _textReader.ReadLine(); //skips first line
         while ((line = _textReader.ReadLine()) != null)
         {
             Person person;
